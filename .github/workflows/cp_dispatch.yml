@@ -134,26 +134,37 @@ jobs:
         run: echo "YUKIHANA_RELEASE=v1.0.9" | Out-File -Append -FilePath $env:GITHUB_ENV
         
       - name: Download Yukihana Patch
+        shell: pwsh
+
         run: |
           try {
             # Build the download URLs
-            $yukihanaFiddlerUrl = "https://github.com/project-yukihana/Yukihana-patch/releases/download/$env:YUKIHANA_RELEASE/yukihana-$env:YUKIHANA_FIDDLER_NAME-win32-x86_64-$env:YUKIHANA_RELEASE.dll"
-            $yukihanaHostPolicyUrl = "https://github.com/project-yukihana/Yukihana-patch/releases/download/$env:YUKIHANA_RELEASE/yukihana-hostpolicy-win32-x86_64-$env:YUKIHANA_RELEASE.dll"
+             $repo = "project-yui/Yui-patch"
+             $tag = "v1.1.4"
+             $yukihanaFiddlerUrl = "https://github.com/$repo/releases/download/$tag/yui-fiddler-win32-x86_64-$tag.dll"
+              $hostPolicyUrl = "https://github.com/$repo/releases/download/$tag/yui-dbghelp-win32-x86_64-$tag.dll"
+  
             
-            # Print the URLs to ensure they're correct
-            Write-Host "Downloading files from $env:YUKIHANA_RELEASE"
-            Write-Host "Yukihana Fiddler URL: $yukihanaFiddlerUrl"
-            Write-Host "Yukihana HostPolicy URL: $yukihanaHostPolicyUrl"
+            Write-Host "Downloading files from $tag"
+            Write-Host "Fiddler URL: $yukihanaFiddlerUrl"
+            Write-Host "HostPolicy URL: $hostPolicyUrl"
 
+            New-Item -ItemType Directory -Force -Path "yukihana" | Out-Null
             # Download the files
-            Invoke-WebRequest -Uri $yukihanaFiddlerUrl -OutFile "yukihana\$env:YUKIHANA_FIDDLER_NAME.dll"
+            Invoke-WebRequest -Uri $yukihanaFiddlerUrl -OutFile "yukihana\fiddler.dll"
             Invoke-WebRequest -Uri $yukihanaHostPolicyUrl -OutFile "yukihana\hostpolicy.dll"
+            try {
+            Invoke-WebRequest -Uri $hostPolicyUrl -OutFile "yukihana\hostpolicy.dll"
+            }
+            catch {
+            Write-Host "Host policy asset not found or not required: $hostPolicyUrl"
+          }
           }
           catch {
             Write-Error "Failed to download the patch files. Error details: $_"
             exit 1
           }
-        shell: pwsh
+     
       
       - name: Upload yukihana folder as an artifact
         uses: actions/upload-artifact@v4
