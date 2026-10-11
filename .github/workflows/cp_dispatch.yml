@@ -152,7 +152,7 @@ jobs:
             New-Item -ItemType Directory -Force -Path "yukihana" | Out-Null
             # Download the files
             Invoke-WebRequest -Uri $yukihanaFiddlerUrl -OutFile "yukihana\fiddler.dll"
-            Invoke-WebRequest -Uri $yukihanaHostPolicyUrl -OutFile "yukihana\hostpolicy.dll"
+            Invoke-WebRequest -Uri $hostPolicyUrl -OutFile "yukihana\hostpolicy.dll"
             try {
             Invoke-WebRequest -Uri $hostPolicyUrl -OutFile "yukihana\hostpolicy.dll"
             }
